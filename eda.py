@@ -74,5 +74,21 @@ plt.show()
 merged_df = pd.merge(observations, species_info, on='scientific_name', how='left')
 print(merged_df.head())
 print(merged_df.columns.tolist())
+category_counts = merged_df.groupby(['park_name', 'category']).size().unstack()
+plt.figure(figsize=(10, 6))
+categories = category_counts.columns.tolist()
+num_categories = len(categories)
+bar_width = 0.8 / num_categories 
 
-merged_df.to_csv('merged_data.csv', index=False)
+for i, category in enumerate(categories):
+    positions = [x + i * bar_width for x in range(len(category_counts.index))]
+    plt.bar(positions, category_counts[category], width=bar_width, label=category)
+custom_labels = ['Bryce', 'Yellowstone', 'Yosemite', 'Grand Canyon']
+
+plt.xticks([r + (0.8 / 2) for r in range(len(category_counts.index))], custom_labels, rotation=45)
+plt.title('Count of Species Categories in Each Park')
+plt.xlabel('Park Name')
+plt.ylabel('Count')
+plt.legend(title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')  # Place legend outside the plot
+plt.tight_layout()
+plt.show()
